@@ -1,8 +1,8 @@
 # Systemd-Enabled Docker Images
 
-[![Build Status](https://github.com/mranv/docker-systemd-images/actions/workflows/build.yml/badge.svg)](https://github.com/mranv/docker-systemd-images/actions/workflows/build.yml)
+[![Build Status](https://github.com/anubhavg-icpl/docker-systemd-images/actions/workflows/build.yml/badge.svg)](https://github.com/anubhavg-icpl/docker-systemd-images/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/license-GPL-blue.svg)](LICENSE)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mranv/systemd-images.svg)](https://hub.docker.com/r/mranv/systemd-images)
+[![Docker Pulls](https://img.shields.io/docker/pulls/anubhavg-icpl/systemd-images.svg)](https://hub.docker.com/r/anubhavg-icpl/systemd-images)
 
 Production-ready Docker containers with systemd/init system support for various Linux distributions. These images are designed for testing infrastructure code with tools like Ansible and Molecule, as well as for applications requiring proper init systems.
 
@@ -65,12 +65,12 @@ Production-ready Docker containers with systemd/init system support for various 
 
 ```bash
 # Pull the Ubuntu 22.04 image (default)
-docker pull mranv/systemd-images:22.04
+docker pull anubhavg-icpl/systemd-images:22.04
 
 # Pull a specific distribution
-docker pull mranv/systemd-images:ubi9
-docker pull mranv/systemd-images:debian12
-docker pull mranv/systemd-images:rocky9
+docker pull anubhavg-icpl/systemd-images:ubi9
+docker pull anubhavg-icpl/systemd-images:debian12
+docker pull anubhavg-icpl/systemd-images:rocky9
 ```
 
 ### Run a Container
@@ -81,7 +81,7 @@ docker run -d \
   --name systemd-container \
   --privileged \
   -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  mranv/systemd-images:22.04
+  anubhavg-icpl/systemd-images:22.04
 ```
 
 ### Connect to a Running Container
@@ -103,7 +103,7 @@ systemctl status
 
 ```bash
 # Clone the repository
-git clone https://github.com/mranv/docker-systemd-images.git
+git clone https://github.com/anubhavg-icpl/docker-systemd-images.git
 cd docker-systemd-images
 
 # Build Ubuntu 22.04
@@ -137,7 +137,7 @@ docker run -d --name systemd-container \
   --cap-add SYS_ADMIN \
   --security-opt seccomp=unconfined \
   -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  mranv/systemd-images:22.04
+  anubhavg-icpl/systemd-images:22.04
 ```
 
 3. **Consider Podman:** Podman can run systemd containers without privileged mode
@@ -171,7 +171,7 @@ ansible-playbook -i inventory playbook.yml
 # molecule.yml
 platforms:
   - name: ubuntu-22
-    image: mranv/systemd-images:22.04
+    image: anubhavg-icpl/systemd-images:22.04
     pre_build_image: true
     privileged: true
     volumes:
@@ -188,7 +188,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: mranv/systemd-images:22.04
+      image: anubhavg-icpl/systemd-images:22.04
       options: --privileged
     steps:
       - uses: actions/checkout@v2
@@ -201,7 +201,7 @@ jobs:
 ```yaml
 # .gitlab-ci.yml
 test:
-  image: mranv/systemd-images:22.04
+  image: anubhavg-icpl/systemd-images:22.04
   variables:
     DOCKER_HOST: tcp://docker:2375
   services:
@@ -215,7 +215,7 @@ test:
 ### Creating Custom Service-Enabled Images
 
 ```dockerfile
-FROM mranv/systemd-images:22.04
+FROM anubhavg-icpl/systemd-images:22.04
 
 # Install and configure a service
 RUN apt-get update && apt-get install -y nginx \
@@ -232,7 +232,7 @@ EXPOSE 80
 While generally not recommended for production, you can run multiple services in development:
 
 ```dockerfile
-FROM mranv/systemd-images:ubi9
+FROM anubhavg-icpl/systemd-images:ubi9
 
 # Install multiple services
 RUN dnf -y install nginx mariadb-server \
@@ -278,7 +278,7 @@ HEALTHCHECK CMD /usr/local/bin/healthcheck.sh
 
 1. **Container exits immediately:** Ensure the cgroup volume is properly mounted
    ```bash
-   docker run -d --name systemd-test --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro mranv/systemd-images:22.04
+   docker run -d --name systemd-test --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro anubhavg-icpl/systemd-images:22.04
    ```
 
 2. **Systemd services fail to start:** Check if you're running with `--privileged` flag
@@ -288,7 +288,7 @@ HEALTHCHECK CMD /usr/local/bin/healthcheck.sh
 
 3. **Cannot enable service:** Some services need additional volumes or capabilities
    ```bash
-   docker run -d --name systemd-test --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /run/lock:/run/lock mranv/systemd-images:22.04
+   docker run -d --name systemd-test --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /run/lock:/run/lock anubhavg-icpl/systemd-images:22.04
    ```
 
 ## Contributing
