@@ -1,121 +1,110 @@
-# Ubuntu Docker Image with systemd
+# Multi-Distro Docker Images with systemd
 
-[![Build](https://github.com/anubhavg-icpl/docker-ubuntu-systemd/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/anubhavg-icpl/docker-ubuntu-systemd/actions/workflows/build.yml) 
-[![GPL License](https://img.shields.io/badge/license-GPL-blue.svg)](https://www.gnu.org/licenses/) 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/anubhavg-icpl)
-[![Docker Pulls](https://img.shields.io/docker/pulls/anubhavg-icpl/docker-ubuntu-systemd.svg)](https://hub.docker.com/r/anubhavg-icpl/docker-ubuntu-systemd)
+Production-ready Docker containers with systemd support for various Linux distributions. Designed for testing infrastructure code with tools like `ansible` and `molecule`, as well as for applications requiring proper init systems.
 
-Production-ready Ubuntu LTS Docker container with systemd support. Designed for testing infrastructure code with tools like `ansible` and `molecule`, as well as for applications requiring proper systemd initialization.
+## Available Base Images
 
-## Available Tags
-
-| Tag | Ubuntu Version | Branch | Status |
-|-----|----------------|--------|--------|
-| `22.04`, `jammy`, `latest` | Ubuntu 22.04 LTS | main | Active Support |
-| `20.04`, `focal` | Ubuntu 20.04 LTS | main | Active Support |
-| `18.04`, `bionic` | Ubuntu 18.04 LTS | 18.04 | Maintenance Only |
-| `16.04`, `xenial` | Ubuntu 16.04 LTS | 16.04 | End of Life |
-
-## Quick Start
-
-```bash
-# Pull the image
-docker pull anubhavg-icpl/docker-ubuntu-systemd:latest
-
-# Run a container with systemd support
-docker run --detach \
-  --name ubuntu-systemd \
-  --privileged \
-  --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro \
-  anubhavg-icpl/docker-ubuntu-systemd:latest
-  
-# Connect to the running container
-docker exec -it ubuntu-systemd bash
-```
+| Distribution | Base Image | Notes |
+|--------------|------------|-------|
+| Ubuntu 22.04 | `ubuntu:22.04` | Uses `/lib/systemd/systemd` as entrypoint |
+| RHEL/UBI 9   | `registry.access.redhat.com/ubi9/ubi:latest` | Uses `/sbin/init` as entrypoint |
+| CentOS 7     | `centos:7` | Uses `/usr/sbin/init` as entrypoint |
 
 ## Security Considerations
 
-This container requires the `--privileged` flag to function correctly with systemd. In production environments:
+These containers require the `--privileged` flag to function correctly with systemd. For production environments:
 
-- Consider using this container primarily for testing or development
-- Isolate containers running with privileged access on dedicated hosts
-- Apply regular security updates to the base images
-- Implement proper network security controls when exposing services
+- Use these images primarily for testing or development scenarios
+- Apply the principle of least privilege when possible
+- Implement proper container isolation and network controls
+- Keep base images updated with security patches
 - Consider alternatives like Podman which can run systemd without privileged mode
 
-## Usage with Ansible
+## Distribution-Specific Usage
+
+### Ubuntu 22.04
+
+```bash
+# Build
+docker build -f Dockerfile.ubuntu -t systemd-ubuntu:22.04 .
+
+# Run
+docker run -d --name systemd-ubuntu --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro systemd-ubuntu:22.04
+```
+
+### Red Hat UBI 9
+
+```bash
+# Build
+docker build -f Dockerfile.ubi -t systemd-ubi:9 .
+
+# Run
+docker run -d --name systemd-ubi --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro systemd-ubi:9
+```
+
+### CentOS 7
+
+```bash
+# Build
+docker build -f Dockerfile.centos7 -t systemd-centos:7 .
+
+# Run
+docker run -d --name systemd-centos --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro systemd-centos:7
+```
+
+## Testing Systemd Services
+
+You can verify systemd is working properly inside the container:
+
+```bash
+# Connect to a running container
+docker exec -it systemd-container bash
+
+# Check systemd status
+systemctl status
+
+# Install and enable a service
+# For Ubuntu:
+apt-get update && apt-get install -y nginx
+systemctl enable --now nginx
+
+# For RHEL/CentOS:
+yum install -y nginx
+systemctl enable --now nginx
+
+# Verify service status
+systemctl status nginx
+```
+
+## Additional Configuration Options
+
+For enhanced security in production, consider these options:
+
+```bash
+# Run with limited capabilities instead of --privileged
+docker run -d --name systemd-container \
+  --cap-add SYS_ADMIN \
+  --security-opt seccomp=unconfined \
+  -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+  systemd-image:tag
+```
+
+## Extending Images for CI/CD
+
+Example `.gitlab-ci.yml` for testing with these images:
 
 ```yaml
-# Example molecule configuration (molecule.yml)
-platforms:
-  - name: ubuntu-systemd
-    image: anubhavg-icpl/docker-ubuntu-systemd:22.04
-    pre_build_image: true
-    privileged: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+test:
+  image: systemd-ubuntu:22.04
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+  services:
+    - docker:dind
+  script:
+    - systemctl status
+    - # your testing commands here
 ```
-
-## Building Custom Images
-
-```bash
-# Clone the repository
-git clone https://github.com/anubhavg-icpl/docker-ubuntu-systemd.git
-cd docker-ubuntu-systemd
-
-# Build the image (Ubuntu 22.04)
-docker build -t my-ubuntu-systemd:22.04 .
-
-# Build for other versions (checkout the appropriate branch first)
-git checkout 18.04
-docker build -t my-ubuntu-systemd:18.04 .
-```
-
-## Container Management
-
-```bash
-# List running containers
-docker ps
-
-# Stop a container
-docker stop ubuntu-systemd
-
-# Remove a container
-docker rm ubuntu-systemd
-
-# Remove the image
-docker image rm anubhavg-icpl/docker-ubuntu-systemd:latest
-```
-
-## Extending This Image
-
-```dockerfile
-FROM anubhavg-icpl/docker-ubuntu-systemd:22.04
-
-# Add your packages
-RUN apt-get update && apt-get install -y \
-    nginx \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Enable services
-RUN systemctl enable nginx
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Author
-
-Created in 2022 by Enio Carboni
 
 ## License
 
-GNU GENERAL PUBLIC LICENSE (see [LICENSE](LICENSE) file)
+This project is licensed under the GPL License - see the LICENSE file for details.
