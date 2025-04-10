@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  ubuntu-22-04:
+    build:
+      context: ./ubuntu/22.04
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:ubuntu-22.04
+
+  ubuntu-22-04-jammy:
+    build:
+      context: ./ubuntu/22.04
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:ubuntu-jammy
+
+  ubuntu-latest:
+    build:
+      context: ./ubuntu/22.04
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:latest
+
+  debian-12:
+    build:
+      context: ./debian/12
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:debian-12
+
+  debian-bookworm:
+    build:
+      context: ./debian/12
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:debian-bookworm
+
+  redhat-ubi9:
+    build:
+      context: ./redhat/ubi9
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:redhat-ubi9
+
+  ubi9:
+    build:
+      context: ./redhat/ubi9
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:ubi9
+
+  redhat-centos7:
+    build:
+      context: ./redhat/centos7
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:redhat-centos7
+
+  centos7:
+    build:
+      context: ./redhat/centos7
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:centos7
+
+  rocky-el9:
+    build:
+      context: ./rocky/el9
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:rocky-el9
+
+  rocky9:
+    build:
+      context: ./rocky/el9
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:rocky9
+
+  almalinux-el9:
+    build:
+      context: ./almalinux/el9
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:almalinux-el9
+
+  alma9:
+    build:
+      context: ./almalinux/el9
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:alma9
+
+  fedora-39:
+    build:
+      context: ./fedora/39
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:fedora-39
+
+  fedora39:
+    build:
+      context: ./fedora/39
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:fedora39
+
+  opensuse-leap15:
+    build:
+      context: ./opensuse/leap15
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:opensuse-leap15
+
+  leap15:
+    build:
+      context: ./opensuse/leap15
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:leap15
+
+  alpine-3-19:
+    build:
+      context: ./alpine/3.19
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:alpine-3.19
+
+  alpine:
+    build:
+      context: ./alpine/3.19
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:alpine
+
+  archlinux-latest:
+    build:
+      context: ./archlinux/latest
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:archlinux-latest
+
+  arch:
+    build:
+      context: ./archlinux/latest
+      dockerfile: Dockerfile
+    image: mranv/systemd-images:arch
